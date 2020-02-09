@@ -9,6 +9,7 @@ const content = `
   </head>
   <body>
     <script>
+
       console.log("fetching data...");
       fetch("/data")
         .then(response => {
@@ -17,7 +18,11 @@ const content = `
         })
         .then(text => {
           console.log("data:", text);
+        })
+        .catch(error => {
+          console.error("data:", error);
         });
+
       console.log("fetching data-chunked...");
       fetch("/data-chunked")
         .then(response => {
@@ -26,7 +31,28 @@ const content = `
         })
         .then(text => {
           console.log("data-chunked:", text);
+        })
+        .catch(error => {
+          console.error("data-chunked:", error);
         });
+
+      const controller = new AbortController();
+      const signal = controller.signal;
+
+      console.log("fetching abort data-chunked...");
+      fetch("/data-chunked", { signal })
+        .then(response => {
+          console.log("abort data-chunked:", response.headers);
+          setTimeout(() => controller.abort(), 0);
+          return response.text();
+        })
+        .then(text => {
+          console.log("abort data-chunked:", text);
+        })
+        .catch(error => {
+          console.error("abort data-chunked:", error);
+        });
+
     </script>
   </body>
 </html>
